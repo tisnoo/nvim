@@ -29,25 +29,24 @@ vim.cmd('autocmd SwapExists * let v:swapchoice = "e"')
 
 -- format on save
 vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = "*",
-    callback = function()
-        vim.lsp.buf.format()
-    end,
+  pattern = "*",
+  callback = function()
+    vim.lsp.buf.format()
+  end,
 })
 
 -- dart specific
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = "dart",
-    callback = function()
-        vim.opt_local.expandtab = true
-        vim.opt_local.shiftwidth = 2
-        vim.opt_local.tabstop = 2
-        vim.opt_local.smartindent = true
-        vim.opt_local.autoindent = true
-        vim.opt_local.cindent = true
-    end,
+  pattern = "dart",
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.smartindent = true
+    vim.opt_local.autoindent = true
+    vim.opt_local.cindent = true
+  end,
 })
-
 
 vim.cmd("set expandtab")
 vim.cmd("set tabstop=2")
@@ -59,11 +58,14 @@ vim.g.background = "light"
 vim.opt.swapfile = false
 
 -- Navigate vim panes better
-vim.keymap.set('n', '<c-k>', ':wincmd k<CR>')
-vim.keymap.set('n', '<c-j>', ':wincmd j<CR>')
-vim.keymap.set('n', '<c-h>', ':wincmd h<CR>')
-vim.keymap.set('n', '<c-l>', ':wincmd l<CR>')
+vim.keymap.set("n", "<c-k>", ":wincmd k<CR>")
+vim.keymap.set("n", "<c-j>", ":wincmd j<CR>")
+vim.keymap.set("n", "<c-h>", ":wincmd h<CR>")
+vim.keymap.set("n", "<c-l>", ":wincmd l<CR>")
 
-vim.keymap.set('n', '<leader>h', ':nohlsearch<CR>')
+vim.keymap.set("n", "<leader>h", ":nohlsearch<CR>")
+
+-- Get out of terminal mode using escape
+vim.api.nvim_set_keymap("t", "<Leader><ESC>", "<C-\\><C-n>", { noremap = true })
+
 vim.wo.number = true
-
