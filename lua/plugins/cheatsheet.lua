@@ -1,3 +1,4 @@
+-- Opens using <leader>?
 return {
 	{
 		"sudormrfbin/cheatsheet.nvim",

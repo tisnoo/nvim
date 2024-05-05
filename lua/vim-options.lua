@@ -4,7 +4,7 @@ vim.opt.guicursor = "i:blinkon100"
 
 -- line number
 vim.opt.number = true
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- device clipboard
 vim.opt.clipboard = "unnamedplus"
@@ -14,9 +14,7 @@ vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
-
 vim.opt.scrolloff = 8
-
 vim.opt.updatetime = 50
 
 -- spell
@@ -29,23 +27,23 @@ vim.cmd('autocmd SwapExists * let v:swapchoice = "e"')
 
 -- format on save
 vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = "*",
-  callback = function()
-    vim.lsp.buf.format()
-  end,
+	pattern = "*",
+	callback = function()
+		vim.lsp.buf.format()
+	end,
 })
 
 -- dart specific
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "dart",
-  callback = function()
-    vim.opt_local.expandtab = true
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.tabstop = 2
-    vim.opt_local.smartindent = true
-    vim.opt_local.autoindent = true
-    vim.opt_local.cindent = true
-  end,
+	pattern = "dart",
+	callback = function()
+		vim.opt_local.expandtab = true
+		vim.opt_local.shiftwidth = 2
+		vim.opt_local.tabstop = 2
+		vim.opt_local.smartindent = true
+		vim.opt_local.autoindent = true
+		vim.opt_local.cindent = true
+	end,
 })
 
 vim.cmd("set expandtab")
@@ -57,15 +55,24 @@ vim.g.background = "light"
 
 vim.opt.swapfile = false
 
--- Navigate vim panes better
-vim.keymap.set("n", "<c-k>", ":wincmd k<CR>")
-vim.keymap.set("n", "<c-j>", ":wincmd j<CR>")
-vim.keymap.set("n", "<c-h>", ":wincmd h<CR>")
-vim.keymap.set("n", "<c-l>", ":wincmd l<CR>")
+-- Normal pane navigation
+vim.keymap.set("n", "<C-h>", "<C-w>h", {})
+vim.keymap.set("n", "<C-j>", "<C-w>j", {})
+vim.keymap.set("n", "<C-k>", "<C-w>k", {})
+vim.keymap.set("n", "<C-l>", "<C-w>l", {})
+
+-- Terminal pane navigation
+vim.keymap.set("t", "<C-h>", "<cmd>wincmd h<CR>", {})
+vim.keymap.set("t", "<C-j>", "<cmd>wincmd j<CR>", {})
+vim.keymap.set("t", "<C-k>", "<cmd>wincmd k<CR>", {})
+vim.keymap.set("t", "<C-l>", "<cmd>wincmd l<CR>", {})
 
 vim.keymap.set("n", "<leader>h", ":nohlsearch<CR>")
 
+-- Make Shift + Tab outdent
+vim.keymap.set("i", "<S-Tab>", "<C-D>", { noremap = true })
+
 -- Get out of terminal mode using escape
-vim.api.nvim_set_keymap("t", "<Leader><ESC>", "<C-\\><C-n>", { noremap = true })
+vim.keymap.set("t", "<Leader><ESC>", "<C-\\><C-n>", { noremap = true })
 
 vim.wo.number = true
