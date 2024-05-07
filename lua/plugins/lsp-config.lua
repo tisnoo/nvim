@@ -1,3 +1,51 @@
+-- these are not lsp specific mappings
+local opts = { noremap = true, silent = true }
+vim.keymap.set("n", "<space>e", vim.diagnostic.open_float, opts)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, opts)
+
+-- do this only on attached buffers
+local function on_attach(client, bufnr)
+	local fzf = require("fzf-lua")
+	require("lsp-status").on_attach(client)
+
+	if client.name == "tsserver" then
+		client.server_capabilities.document_formatting = false
+	end
+
+	if client.server_capabilities.inlayHintProvider then
+		vim.keymap.set("n", "<space>gi", function()
+			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled(0))
+		end)
+		vim.lsp.inlay_hint.enable(true)
+	end
+
+	-- lsp specific mappings
+	local bufopts = { noremap = true, silent = true, buffer = bufnr }
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
+	vim.keymap.set("n", "gli", fzf.lsp_implementations, bufopts)
+	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
+	vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, bufopts)
+	vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
+	vim.keymap.set("n", "<space>wl", function()
+		print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+	end, bufopts)
+	vim.keymap.set("n", "<space>D", fzf.lsp_typedefs, bufopts)
+	vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
+	vim.keymap.set("n", "<space>ca", fzf.lsp_code_actions, bufopts)
+	vim.keymap.set("n", "gr", fzf.lsp_references, bufopts)
+	vim.keymap.set("n", "g0", fzf.lsp_code_actions, bufopts)
+	vim.keymap.set("n", "<space>f", function()
+		vim.lsp.buf.format({ async = true })
+	end, bufopts)
+end
+
+-- I don't use the angularls installed by mason
+-- Ref: https://github.com/williamboman/mason.nvim/blob/4f5de77fab742ab2ca5512e7f3c9881cacdaf8eb/lua/nvim-lsp-installer/servers/angularls/init.lua
+
 local function get_npm_root()
 	return vim.fn.system("npm root"):gsub("\n", "")
 end
@@ -30,19 +78,48 @@ end
 return {
 	{
 		"williamboman/mason.nvim",
-		lazy = false,
+		commit = "751b1fcbf3d3b783fcf8d48865264a9bcd8f9b10",
 		config = function()
+			-- Seems to be required
 			require("mason").setup()
 		end,
 	},
 	{
-		"nvim-lua/lsp-status.nvim",
-		commit = "54f48eb5017632d81d0fd40112065f1d062d0629",
-		config = function()
-			require("lsp-status").register_progress()
+		-- Hacky: should come before lspconfig so ast-grep's actions come first
+		"jose-elias-alvarez/null-ls.nvim",
+		commit = "0010ea927ab7c09ef0ce9bf28c2b573fc302f5a7",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		opts = function()
+			local null_ls = require("null-ls")
+
+			return {
+				on_attach = on_attach,
+				debug = true,
+				sources = {
+					null_ls.builtins.formatting.latexindent.with({
+						filetypes = { "tex", "latex" },
+					}),
+					null_ls.builtins.formatting.fixjson,
+					null_ls.builtins.diagnostics.luacheck,
+					null_ls.builtins.diagnostics.shellcheck,
+					null_ls.builtins.diagnostics.stylelint.with({
+						extra_args = {
+							"--config",
+							---@diagnostic disable-next-line: param-type-mismatch
+							vim.fn.fnamemodify(vim.fn.expand("$MYVIMRC"), ":h") .. "/stylelint.config.js",
+						},
+					}),
+					null_ls.builtins.diagnostics.todo_comments,
+					null_ls.builtins.diagnostics.trail_space,
+					null_ls.builtins.formatting.trim_whitespace,
+					null_ls.builtins.formatting.stylua.with({
+						extra_args = { "--indent-type", "Spaces", "--indent-width", "2" },
+					}),
+					null_ls.builtins.formatting.clang_format,
+				},
+			}
 		end,
 	},
-
 	{
 		"williamboman/mason-lspconfig.nvim",
 		commit = "4eb8e15e3c0757303d4c6dea64d2981fc679e990",
@@ -158,6 +235,17 @@ return {
 		end,
 	},
 	{
+	  "folke/neodev.nvim",
+	  commit = "1676d2c24186fc30005317e0306d20c639b2351b",
+	},
+	{
+		"nvim-lua/lsp-status.nvim",
+		commit = "54f48eb5017632d81d0fd40112065f1d062d0629",
+		config = function()
+			require("lsp-status").register_progress()
+		end,
+	},
+	{
 		"neovim/nvim-lspconfig",
 		commit = "694aaec65733e2d54d393abf80e526f86726c988",
 		config = function()
@@ -172,12 +260,6 @@ return {
 					new_config.cmd = angularls_config(new_root_dir)
 				end,
 			})
-
-			vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
-			vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, {})
-			vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references, {})
-			vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
-			vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, {})
 		end,
 	},
 	{

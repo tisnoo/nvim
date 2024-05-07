@@ -25,25 +25,25 @@ vim.opt.spellcapcheck = ""
 -- iterm multiple tabs
 vim.cmd('autocmd SwapExists * let v:swapchoice = "e"')
 
--- format on save
-vim.api.nvim_create_autocmd("BufWritePre", {
-	pattern = "*",
-	callback = function()
-		vim.lsp.buf.format()
-	end,
-})
+-- format on save, moved this code to plugins/lsp-config.lua
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+--   pattern = "*",
+--   callback = function()
+--     vim.lsp.buf.format()
+--   end,
+-- })
 
 -- dart specific
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "dart",
-	callback = function()
-		vim.opt_local.expandtab = true
-		vim.opt_local.shiftwidth = 2
-		vim.opt_local.tabstop = 2
-		vim.opt_local.smartindent = true
-		vim.opt_local.autoindent = true
-		vim.opt_local.cindent = true
-	end,
+  pattern = "dart",
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.smartindent = true
+    vim.opt_local.autoindent = true
+    vim.opt_local.cindent = true
+  end,
 })
 
 vim.cmd("set expandtab")
@@ -55,11 +55,11 @@ vim.g.background = "light"
 
 vim.opt.swapfile = false
 
--- Normal pane navigation
-vim.keymap.set("n", "<C-h>", "<C-w>h", {})
-vim.keymap.set("n", "<C-j>", "<C-w>j", {})
-vim.keymap.set("n", "<C-k>", "<C-w>k", {})
-vim.keymap.set("n", "<C-l>", "<C-w>l", {})
+-- Normal pane navigation, moved this to plugins/nvim-tmux-navigation.lua
+-- vim.keymap.set("n", "<C-h>", "<C-w>h", {})
+-- vim.keymap.set("n", "<C-j>", "<C-w>j", {})
+-- vim.keymap.set("n", "<C-k>", "<C-w>k", {})
+-- vim.keymap.set("n", "<C-l>", "<C-w>l", {})
 
 -- Terminal pane navigation
 vim.keymap.set("t", "<C-h>", "<cmd>wincmd h<CR>", {})
