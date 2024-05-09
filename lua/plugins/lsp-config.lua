@@ -1,6 +1,8 @@
 -- Servers that should be installed
 local servers = {
   "angularls@14.2.0",
+  "eslint",
+  "lua_ls",
 }
 
 -- these are not lsp specific mappings
@@ -117,7 +119,6 @@ return {
           null_ls.builtins.diagnostics.todo_comments,
           null_ls.builtins.diagnostics.trail_space,
           null_ls.builtins.formatting.trim_whitespace,
-          null_ls.builtins.formatting.eslint_d,
           null_ls.builtins.formatting.stylua.with({
             extra_args = { "--indent-type", "Spaces", "--indent-width", "2" },
           }),
@@ -238,6 +239,7 @@ return {
             includeInlayVariableTypeHints = true,
             includeInlayVariableTypeHintsWhenTypeMatchesName = false,
             quotePreference = "single",
+            disableSuggestions = true,
           },
           tsserver_format_options = {
             insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
